@@ -2,20 +2,42 @@
 
 namespace App\Controller;
 
+use App\Entity\Blog;
+use App\Repository\BlogRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DefaultController extends AbstractController
 {
-    #[Route('/default/{id}', name: 'blog_default', requirements: ['id' => '\d+'], defaults: ['id' => 1], methods: ['GET'])]
-    public function index(Request $request, int $id): Response
+    #[Route('/', name: 'blog_default')]
+    public function index(BlogRepository $blogRepository, EntityManagerInterface $em): Response
     {
-//        dump('1');exit;
-//        dd(['id' => 1]);
-//        dd($id);
-//        dd($request->query->get('name'));
-        return $this->render('default/index.html.twig', ['id' => $id]);
+        $blogs = $blogRepository->findAll();
+//        $blogsWithId1 = $blogRepository->findBy(['id' => 1]);
+        $blog = $blogRepository->findOneBy(['id' => 3]);
+
+        /** Изменить тайтл */
+//        $blog->setTitle('Title 2');
+
+        /** Удалиь запись */
+//        $em->remove($blog);
+//        $em->flush();
+
+        /** Обновить данные */
+//        $em->refresh($blog);
+
+//        dump($blog);
+
+        $blog = (new Blog())
+            ->setTitle('Title')
+            ->setDescription('Description')
+            ->setText('Text');
+
+        $em->persist($blog);
+        $em->flush();
+
+        return $this->render('default/index.html.twig', []);
     }
 }
